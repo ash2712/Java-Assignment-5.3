@@ -1,0 +1,172 @@
+import java.util.*;
+public class EmployeeClass {
+	
+	static boolean flag;
+	
+	public static void main(String s[]){
+		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Hello, please enter your Employee ID: 4-digit numbers are permanent employees and 5-digit numbers are temporary employees");
+		String empId= sc.next();
+		if(empId.length() == 4){//if the employee id is a four-digit number, then it is a permanent employee
+			permanentEmp pe = new permanentEmp();
+			pe.print_leave_details();
+			pe.avail_leave();
+			pe.calculate_balance_leaves();
+			pe.calculate_salary();
+		}else if (empId.length() == 5){//else if it is five-digit number, then it is a temporary employee
+			temporaryEmp te = new temporaryEmp();
+			te.calculate_balance_leaves();
+			te.avail_leave();
+			te.calculate_salary();
+			
+		}else{
+			System.out.println("Sorry, that is not a valid Id. Please enter a valid  4 digit or a 5 digit id number.");
+		}
+	}
+}
+
+class employee{
+	
+	
+	String empName;
+	double total_salary;
+	int  total_leaves;
+	boolean flag = true;
+	
+
+	void calculate_balance_leaves() {
+		
+	}
+	boolean avail_leave() {
+		return false;
+	}
+	void calculate_salary() {
+	}
+}
+
+
+class permanentEmp extends employee{
+	
+	Scanner sc = new Scanner(System.in);
+	int paid_leave, sick_leave, casual_leave,paid_leave1,sick_leave1, casual_leave1, no_of_leaves;
+	double basic, hra, pf;
+	
+	permanentEmp(){
+		paid_leave  = 5;
+		sick_leave = 5;
+		casual_leave = 5;
+		basic = 18000;
+	}
+	
+	void print_leave_details(){
+		System.out.println("Please enter your name: ");//Asks user for name
+		empName = sc.next();
+		System.out.println(empName + ", you have " + paid_leave + " paid leaves, " + sick_leave + " sick leaves and " + casual_leave + " casual leaves remaining.");//tells user number of leaves he has left
+		System.out.println("No. of total leaves = " + (paid_leave + sick_leave + casual_leave));
+		
+	}
+	
+	
+	boolean avail_leave(){
+		total_leaves = paid_leave + sick_leave + casual_leave;
+		Scanner sc1 = new Scanner(System.in);
+		System.out.println("How many leaves do you want to take for the month??");//asks user how many leaves user wants to take
+		no_of_leaves= sc1.nextInt();
+		System.out.println("What kind of leave are you taking:'sick', 'casual' or 'paid'");//asks user what kind of leave they want to take
+		String type_of_leave = sc1.next();
+		while(type_of_leave != "paid" && type_of_leave != "sick" && type_of_leave != "casual"){
+			System.out.println("Please type in either'paid', 'sick' or'casual'");
+			System.exit(0);
+		}
+			if(type_of_leave.toLowerCase().equals("paid")){
+				paid_leave1 = paid_leave - no_of_leaves;//if type of leave is paid, then it is deducted from paid leave
+				flag = true;
+				System.out.println(no_of_leaves + " leaves have been deducted from your total leaves");
+			}else if(type_of_leave.toLowerCase().equals("sick")){
+				sick_leave1 = sick_leave - no_of_leaves;//if type of leave is sick, then it is deducted from sick leave
+				flag = true;
+				System.out.println(no_of_leaves + " leaves have been deducted from your total leaves");
+			}else if(type_of_leave.toLowerCase().equals("casual")){
+				casual_leave1 = casual_leave - no_of_leaves;//if type of leave is casual, then it is deducted from casual leave
+				flag = true;
+				System.out.println(no_of_leaves + " leaves have been deducted from your total leaves");
+			}
+		
+		return flag;
+	}
+	void calculate_balance_leaves(){
+		if(paid_leave1 == 0){//this block of code retains the value of a particular leave, if that type of leave wasn't deducted
+			paid_leave1 = paid_leave;	
+		}
+		if(casual_leave1 == 0){
+			casual_leave1 = casual_leave;	
+		}
+		if(sick_leave1 == 0){
+			sick_leave1 = sick_leave;	
+		}
+		total_leaves =  paid_leave1 + sick_leave1 + casual_leave1; 
+		
+		System.out.println("Leave balance = " + total_leaves);
+	}
+	
+	
+	void calculate_salary(){
+		
+		double salPerDay;
+		
+		pf = basic * 12/100;
+		hra = basic * 50/100;
+		total_salary = basic + hra;
+		total_salary = total_salary - pf;//calculates leave
+		
+		if(total_leaves < 0){//if number of leaves pending is lesser then zero, than salary is subtracted based on number of leaves taken
+			salPerDay = total_salary /30;
+			total_salary = total_salary + (total_leaves * salPerDay);
+			
+		}
+		
+		System.out.println("Your total salary for this month is rupees " + total_salary);
+		
+	}
+}
+
+class temporaryEmp extends employee{
+	
+	int no_of_leaves;
+	
+	void calculate_balance_leaves(){
+		Scanner sc1 = new Scanner(System.in);
+		
+		System.out.println("Please enter your name: ");//asks user for name
+		empName = sc1.next();
+		
+		System.out.println(empName + ", how many leaves do you want to take??");
+		no_of_leaves = sc1.nextInt();//asks user for number of leaves which the user is going to take
+		
+		if(no_of_leaves > 30){
+			System.out.println("Sorry, that is not valid for this month. Please try again");
+			calculate_balance_leaves();//if number of leaves is greater than the number of days present in the month, then an error massage comes up
+		}else{
+			System.out.println("No. of leaves being taken = " + no_of_leaves);
+		}
+		
+		
+		}
+	boolean avail_leave(int no_of_leaves, char type_of_leave){
+		return false;
+	}
+	void calculate_salary(){
+		double basic, hra;
+		double salPerDay;
+		
+		basic = 12000;
+		hra = basic * 50/100;
+		total_salary = basic + hra;//calculates salary without pf
+		
+		salPerDay = total_salary /30;//deductes leaves from salary
+		total_salary = total_salary + (no_of_leaves * salPerDay);
+		
+		System.out.println("Your total salary for this month is rupees " + total_salary);
+	}
+}
